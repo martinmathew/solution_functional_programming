@@ -18,9 +18,12 @@ object Exercise2 {
         {
            true
         }
-      else
+      else if (!gt(arr(index),arr(index+1)))
         {
-          gt(arr(index),arr(index+1)) && check(index+1)
+          false
+        }
+       else {
+          check(index+1)
 
         }
     }
