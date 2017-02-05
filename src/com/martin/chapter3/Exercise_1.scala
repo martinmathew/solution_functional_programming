@@ -25,7 +25,9 @@ object Exercise_1 {
 
 
   def main(args: Array[String]): Unit = {
-    List.test
+
+    val x = List(1, 2, 3, 4, 5)
+   println(List.productFold(x,1))
   }
 
   object List {
@@ -43,6 +45,25 @@ object Exercise_1 {
       case Cons(x, xs) => x * product(xs)
     }
 
+
+    def foldRight(ints:List[Int],num:Int)(invariantCheck : (Int) => Boolean)(fun:(Int,Int)=>Int):Int ={
+      ints match {
+        case Nil => num
+        case Cons(x,xs) =>if(invariantCheck(x)) 0 else fun(x,foldRight(xs,num)(invariantCheck)(fun))
+      }
+    }
+
+    def sumFold[A](ints:List[Int]) :Int = {
+      foldRight(ints,0)((a:Int) => true)(_ + _)
+    }
+
+   /** EXERCISE 7: Can product implemented using foldRight immediately
+      halt the recursion and return 0.0 if it encounters a 0.0? Why or why not?
+      Consider how any short-circuiting might work if you call foldRight with a
+    large list. This is a deeper question that we'll return to a few chapters from now.**/
+    def productFold[A](ints:List[Int],num:Int):Int = {
+      foldRight(ints,1)(_==0)((a:Int,b:Int) =>  a*b)
+    }
 
     def apply[A](as: A*): List[A] =
       if (as.isEmpty) Nil
