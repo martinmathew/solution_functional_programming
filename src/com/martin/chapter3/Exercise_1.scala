@@ -46,15 +46,15 @@ object Exercise_1 {
     }
 
 
-    def foldRight(ints:List[Int],num:Int)(invariantCheck : (Int) => Boolean)(fun:(Int,Int)=>Int):Int ={
+    def foldRightWithInvariant(ints:List[Int],num:Int)(invariantCheck : (Int) => Boolean)(fun:(Int,Int)=>Int):Int ={
       ints match {
         case Nil => num
-        case Cons(x,xs) =>if(invariantCheck(x)) 0 else fun(x,foldRight(xs,num)(invariantCheck)(fun))
+        case Cons(x,xs) =>if(invariantCheck(x)) 0 else fun(x,foldRightWithInvariant(xs,num)(invariantCheck)(fun))
       }
     }
 
     def sumFold[A](ints:List[Int]) :Int = {
-      foldRight(ints,0)((a:Int) => true)(_ + _)
+      foldRightWithInvariant(ints,0)((a:Int) => false)(_ + _)
     }
 
    /** EXERCISE 7: Can product implemented using foldRight immediately
@@ -62,7 +62,7 @@ object Exercise_1 {
       Consider how any short-circuiting might work if you call foldRight with a
     large list. This is a deeper question that we'll return to a few chapters from now.**/
     def productFold[A](ints:List[Int],num:Int):Int = {
-      foldRight(ints,1)(_==0)((a:Int,b:Int) =>  a*b)
+      foldRightWithInvariant(ints,1)(_==0)((a:Int,b:Int) =>  a*b)
     }
 
     def apply[A](as: A*): List[A] =
@@ -82,7 +82,33 @@ object Exercise_1 {
     }
 
 
+    def foldRight[A,B](ints:List[A],num:A)(fun:(A,A)=>A):A ={
+      ints match {
+        case Nil => num
+        case Cons(x,xs) => fun(x,foldRight(xs,num)(fun))
+      }
+    }
 
+
+    def foldLeftViaFoldRight[A,B](l: List[A], z: A)(f: (A,A) => A): A =
+      foldRight(l, (b:A) => b)((a,g) => b => g(f(b,a)))(z)
+
+
+    def foldLeft[a, b](_xs: List[a], z: b)(f: (b, a) => b): b =
+      _xs match {
+        case Nil =>  z
+        case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
+      }
+
+    /**
+      * EXERCISE 9: Compute the length of a list using foldRight.
+      * @param list
+      * @tparam Int
+      * @return
+      */
+    def length[Int](list:List[scala.Int]):scala.Int = {
+  foldRight(list,0)((elem:scala.Int, index:scala.Int) => index + 1)
+}
 
   }
 
