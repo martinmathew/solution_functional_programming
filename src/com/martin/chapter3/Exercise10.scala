@@ -26,8 +26,7 @@ discussed in the previous chapter.
     case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
   }
 
-  def foldLeft[A, B](xs: List[A], z: B)(s: (B, A) => B): B =
-    foldRight(xs, (b: B) => b)((a, f) => t => f(s(t, a)))(z)
+
 
   def foldRight[A,B](ints:List[A],num:B)(fun:(B,A)=>B):B ={
     ints match {
