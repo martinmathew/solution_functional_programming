@@ -1,5 +1,7 @@
 package com.martin.chapter3
 
+import scala.collection.immutable
+
 /**
   * Created by Martin on 2/1/2017.
   */
@@ -26,9 +28,12 @@ object Exercise_1 {
 
   def main(args: Array[String]): Unit = {
 
-    val x = List(List(1, 2, 3, 4, 5),List(6,7,8,9),List(10,11,12))
+    val x11 = List(List(1, 2, 3, 4, 5),List(6,7,8,9),List(10,11,12))
     val x1 = List(1,2,3,4)
-   println(List.filter(x1)(x => x%2 == 0))
+  // println(List.filter(x1)(x => x%2 == 0))
+    val sup = immutable.List(1,2,3,4)
+    val sub = immutable.List(2,9)
+    println(List.subsequence(sup,sub))
   }
 
   object List {
@@ -207,5 +212,97 @@ predicate. Use it to remove all odd numbers from a List[Int].
         case Cons(x,ys) => if(fun(x)) Cons(x,filter(ys)(fun)) else filter(ys)(fun)
       }
     }
+
+    /**
+      * Write a function flatMap that works like map except that the function given will return
+a list instead of a single result, and that list should be inserted into the final resulting
+list. Here is its signature:
+      * @param xs
+      * @param fun
+      * @tparam A
+      * @tparam B
+      * @return
+      */
+
+    def flatMap[A,B](xs:List[A])(fun:A => List[B]):List[B] = {
+      foldLeft(xs,Nil:List[B])((x,y) => append(fun(y),x) )
+    }
+
+    /**
+      * EXERCISE 3.21
+Use flatMap to implement filter.
+      * @param xs
+      * @param fun
+      * @tparam A
+      * @return
+      */
+
+    def filterUsingFlat[A](xs:List[A])(fun:A => Boolean) : List[A]={
+      flatMap(xs)((x) => if(fun(x)) List(x) else  Nil)
+    }
+
+    /**
+      * EXERCISE 3.22
+Write a function that accepts two lists and constructs a new list by adding corresponding
+elements. For example, List(1,2,3) and List(4,5,6) become List(5,7,9).
+      * @param xs
+      * @param ys
+      * @tparam Int
+      * @return
+      */
+
+    def addList(xs:List[Int],ys:List[Int]): List[Int] ={
+      (xs,ys) match{
+        case (Nil,_) => ys
+        case (_,Nil) => xs
+        case (Cons(s:Int,xs1),Cons(t:Int,ys1)) => Cons(t+s,addList(xs1,ys1))
+      }
+
+    }
+
+    /**
+      * EXERCISE 3.23
+Generalize the function you just wrote so that it’s not specific to integers or addition.
+Name your generalized function zipWith.
+      * @param xs
+      * @param ys
+      * @param fun
+      * @tparam A
+      * @tparam B
+      * @return
+      */
+    def zipWidth[A,B](xs:List[A],ys:List[A])(fun:(A,A) => B):List[B] = {
+      (xs,ys) match {
+        case (Nil,_) => Nil
+        case (_,Nil) => Nil
+        case (Cons(s,st:List[A]),Cons(t,tt:List[A])) => Cons(fun(s,t),zipWidth(st,tt)(fun))
+      }
+    }
+
+    /**
+      * EXERCISE 3.24
+Hard: As an example, implement hasSubsequence for checking whether a List contains
+another List as a subsequence. For instance, List(1,2,3,4) would have
+List(1,2), List(2,3), and List(4) as subsequences, among others. You may have
+some difficulty finding a concise purely functional implementation that is also efficient.
+That’s okay. Implement the function however comes most naturally. We’ll
+return to this implementation in chapter 5 and hopefully improve on it. Note: Any
+two values x and y can be compared for equality in Scala using the expression x == y.
+      * @param sup
+      * @param sub
+      * @return
+      */
+
+    def subsequence(sup:immutable.List[Int],sub:immutable.List[Int]):Boolean = {
+      (sup,sub) match {
+
+        case (_,_root_.scala.Nil) => true
+        case (_root_.scala.Nil,_) => false
+        case (x::xs,y::ys) => (x == y && subsequence(xs,ys)) || subsequence(xs,sub)
+      }
+    }
+
+
+
 
   }}
