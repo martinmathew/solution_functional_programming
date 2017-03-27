@@ -177,6 +177,14 @@ Right value.
         case Right(a) => f(a)
       }
     }
+
+
+    def flatMapComp[EE >: E, B](f: A => Either[EE, B]): Either[EE, B] = {
+      this match {
+        case Left(e) => Left(e)
+        case Right(a) => f(a)
+      }
+    }
     def orElse[EE >: E,B >: A](b: => Either[EE, B]): Either[EE, B] = {
       this match {
 
@@ -187,12 +195,38 @@ Right value.
     def map2[EE >: E, B, C](b: Either[EE, B])(f: (A, B) => C):
     Either[EE, C] = this.flatMap(a => b.map(bb => f(a,bb)))
 
+    /**
+      * EXERCISE 4.8
+In this implementation, map2 is only able to report one error, even if both the name
+and the age are invalid. What would you need to change in order to report both errors?
+Would you change map2 or the signature of mkPerson? Or could you create a new data
+type that captures this requirement better than Either does, with some additional
+structure? How would orElse, traverse, and sequence behave differently for that
+data type?
+      * @param that
+      * @param f
+      * @tparam EE
+      * @tparam B
+      * @tparam C
+      * @return
+      */
+    def map2Comp[EE >: E, B, C](that: Either[EE, B])(f: (A, B) => C):
+    Either[EE, C] = (this,that)
+      match {
+      case (Left(a),Left(e)) => CompositeLeft(List(a,e))
+      case (Left(a),Right(e)) => Left(a)
+      case (Right(a),Left(e)) => Left(e)
+      case (Right(a),Right(b)) => Right(f(a,b))
+      }
+
   }
 
 
   case class Right[+A](a:A) extends Either[Nothing,A]
 
   case class Left[+E](e:E) extends Either[E,Nothing]
+
+  case class CompositeLeft[+E](l:List[E]) extends Left[E,Nothing]
   // Exercise 4.7
   // Implement sequence and traverse for Either. These should return the first
   // error that’s encountered, if there is one.
@@ -204,6 +238,26 @@ Right value.
   def traverse[E,A,B](as:List[A])(f:A => Either[E,B]):Either[E,List[B]] = {
     as.foldRight[Either[E,List[B]]](Right(Nil))((a:A,acc:Either[E,List[B]]) => f(a).map2(acc)(_::_))
   }
+
+
+  def traverseComp[E,A,B](as:List[A])(f:A => Either[E,B]):Either[E,List[B]] = {
+    as.foldRight[Either[E,List[B]]](Right(Nil))((a:A,acc:Either[E,List[B]]) => f(a).map2(acc)(_::_))
+  }
+
+  case class Person(name: Name, age: Age)
+  sealed class Name(val value: String)
+  sealed class Age(val value: Int)
+  def mkName(name: String): Either[String, Name] =
+    if (name == "" || name == null) Left("Name is empty.")
+    else Right(new Name(name))
+  def mkAge(age: Int): Either[String, Age] =
+    if (age < 0) Left("Age is out of range.")
+    else Right(new Age(age))
+
+  def mkPerson(name:String,age:Int):Either[String,Person] = {
+    mkName(name).map2(mkAge(age))(Person(_,_))
+  }
+
 
 }
 

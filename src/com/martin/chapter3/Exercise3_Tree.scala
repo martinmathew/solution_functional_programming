@@ -12,7 +12,7 @@ package com.martin.chapter3
 
   /**
     * EXERCISE 3.25
-Write a function size that counts the number of nodes (leaves and branches) in a tree.
+       Write a function size that counts the number of nodes (leaves and branches) in a tree.
     * @param node
     * @tparam A
     * @return
