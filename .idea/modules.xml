@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/solution_functional_programming.iml" filepath="$PROJECT_DIR$/solution_functional_programming.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FPIS.iml" filepath="$PROJECT_DIR$/FPIS.iml" />
     </modules>
   </component>
 </project>
